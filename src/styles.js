@@ -1,5 +1,5 @@
 const styles = `.floating-button {
-    position: absolute;
+    position: fixed;
     z-index: 99999;
     background-color: #007bff;
     color: #ffffff;
@@ -11,8 +11,9 @@ const styles = `.floating-button {
     justify-content: center;
     align-items: center;
     font-size: 14px;
-    bottom: 100px;
-    right: 100px;
+    bottom: 50px;
+    right: 50px;
+    box-shadow: 2px 2px 2px #5d5d5d;
   }
   
   .modal-overlay {
@@ -41,8 +42,23 @@ const styles = `.floating-button {
   }
   
   .modal-content {
+    position: relative;
     max-width: 400px;
-    text-align: center;
+  }
+
+  .close-modal {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    padding: 0;
+    line-height: 1;
+    font-size: 10px;
+    cursor: pointer;
+    outline: 0;
+    border: 0;
   }
   
   .fade-enter {

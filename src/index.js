@@ -61,7 +61,7 @@ const App = () => {
                           <li>Strategy 6</li>
                           <li>Strategy 7</li>
                         </ol>
-                        <button onClick={closeModal}>Close Modal</button>
+                        <button className="close-modal" onClick={closeModal}>x</button>
                     </div>
                 </CSSTransition>
             </Modal>
