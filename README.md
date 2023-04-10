@@ -2,7 +2,7 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-run build and load/reload the extension
+run build and load/reload the build folder in the extensions window (developer mode on)
 
 ## Available Scripts
 
