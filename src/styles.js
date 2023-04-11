@@ -35,21 +35,23 @@ const styles = `.floating-button {
     position: absolute;
     top: 100px;
     right: 100px;
-    background: #000;
-    padding: 20px;
+    background-color: #000;
     border-radius: 20px;
     color: #fff;
+    width: 400px;
   }
   
   .modal-content {
     position: relative;
+    padding: 20px;
     max-width: 400px;
+    border-radius: 20px;
   }
 
   .close-modal {
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: 10px;
+    right: 10px;
     width: 20px;
     height: 20px;
     border-radius: 20px;
