@@ -1,28 +1,26 @@
 import React from "react";
-import Modal from "react-modal";
 import { CSSTransition } from "react-transition-group";
 
-const ChessMateModal = ({ isOpen, onRequestClose, title, children, css = {
-    backgroundColor: '#000'
+const ChessMate = ({ isOpen, onRequestClose, title, children, css = {
+    backgroundColor: '#000',
+    width: 300,
+    marginLeft:-550
 } }) => {
     return (
-        <Modal
-            isOpen={isOpen}
-            onRequestClose={onRequestClose}
-            className="modal"
-            overlayClassName="modal-overlay"
-            shouldCloseOnOverlayClick={true}
-            ariaHideApp={false}
+        <div
+            className='model'
         >
-            <CSSTransition in={isOpen} timeout={300} classNames="fade">
-                <div className="modal-content" style={css}>
-                    <h2 style={{marginTop:0}}>{title}</h2>
-                    {children}
-                    <button className="close-modal" onClick={onRequestClose}>x</button>
-                </div>
-            </CSSTransition>
-        </Modal>
+            {isOpen?
+                <CSSTransition in={isOpen} timeout={300} classNames="fade">
+                    <div className="modal-content" style={css}>
+                        <h2 style={{marginTop: 0}}>Chess</h2>
+                        {children}
+                        <button className="close-modal" onClick={onRequestClose}>x</button>
+                    </div>
+                </CSSTransition>:null
+            }
+        </div>
     );
 };
 
-export default ChessMateModal;
+export default ChessMate;
