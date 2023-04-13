@@ -3,7 +3,7 @@ import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import Confetti from 'react-confetti'
 
-export default function PlayPuzzle({position, bestMove}) {
+export default function PlayPuzzle({position, bestMove, setCompletedPuzzle}) {
   const [game, setGame] = useState(new Chess(position));
   const [celebrations, setCelebrations] = useState(false);
   const [draggable, setDraggable] = useState(true);
@@ -20,6 +20,8 @@ export default function PlayPuzzle({position, bestMove}) {
 
     // illegal move
     if (move === null) return false;
+
+    setCompletedPuzzle(true)
 
     const playerMove = `${move.from}${move.to}`
 

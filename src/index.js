@@ -29,9 +29,33 @@ const App = () => {
     const [puzzles, setPuzzles] = React.useState([]);
     const [username, setUsername] = React.useState([]);
     const [puzzle, setPuzzle] = React.useState([]);
-    // const [chess] = React.useState(new Chess());
-    // const [currentMove, setCurrentMove] = React.useState(0);
-    // const [boardLocked, setBoardLocked] = React.useState(false);
+    const [completedPuzzles, setCompletedPuzzles] = React.useState([]);
+    const [puzzleFens, setPuzzleFens] = React.useState([]);
+
+    useEffect(() => {
+        if ( puzzles.length !== 0 && completedPuzzles.length !== 0 && puzzles.length === completedPuzzles.length ) {
+            const handleUserRating = () => {
+                console.log('initial ratings...')
+                console.log(puzzleFens)
+                console.log('completed puzzles')
+                console.log(completedPuzzles)
+                const setRating = async () => {
+                    const puzzleUrl = 'http://127.0.0.1:5000/get-initial-rating'
+                    const response = await fetch(puzzleUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ "username": username, "player_fens": puzzleFens }),
+                    });
+                    const puzzlesR = await response.json();
+                    console.log(puzzlesR)
+                }
+                setRating()
+            }
+            handleUserRating()
+        }
+    },[puzzles,completedPuzzles,puzzleFens,username])
 
     const handleDragStart = () => {
         setDragging(true);
@@ -130,10 +154,23 @@ const App = () => {
         setRating(response)
     }
 
-    const handlePuzzleModal = (puzzle) => {
+    const handlePuzzleModal = (puzzle, id) => {
+        puzzle.id = id
         setPuzzle(puzzle)
         setPlayModalIsOpen(true);
     };
+
+    const handleCompletedPuzzle = async () => {
+        setCompletedPuzzles([...completedPuzzles, puzzle.id])
+        setPuzzleFens([...puzzleFens, puzzle.fen])
+        setTimeout(() => {
+            // console.log(`completed puzzles:`)
+            // console.log(completedPuzzles)
+            // console.log(`puzzle fens:`)
+            // console.log(puzzleFens)
+            setPlayModalIsOpen(false);
+        }, 3000);
+    }
 
     return (
       <div>
@@ -151,7 +188,7 @@ const App = () => {
             <ChessMateModal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
-                title={`Puzzles & Strategies`}
+                title={0===rating?`Please complete the puzzles`:`Puzzles & Strategies`}
             >
                 Hello, {username}
                 {
@@ -163,7 +200,7 @@ const App = () => {
                                 {
                                     puzzles && puzzles.map((p,i) => {
                                         console.log(p, i)
-                                        return <li key={i} onClick={() => handlePuzzleModal(p)}>
+                                        return <li key={i} onClick={() => ! completedPuzzles.includes(i) ? handlePuzzleModal(p, i) : false}>
                                             <h4>Puzzle {i}</h4>
                                         </li>
                                         }
@@ -175,7 +212,7 @@ const App = () => {
                         null
                 }
                 {
-                    0 < rating ?
+                    0 !== rating ?
                         <>
                             <p>User rating: {rating}</p>
                             <p>Below are the list of available strategies.</p>
@@ -213,7 +250,7 @@ const App = () => {
                 title={'Play Puzzle'}
                 css={{backgroundColor:'green'}}
             >
-                <PlayPuzzle position={puzzle['fen']} bestMove={puzzle['best_move']} />
+                <PlayPuzzle position={puzzle['fen']} bestMove={puzzle['best_move']} setCompletedPuzzle={handleCompletedPuzzle} />
             </ChessMateModal>
             {/* login model */}
             <ChessMateModal
