@@ -2,9 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Draggable from "react-draggable";
 import ChessMateModal from "./Modal";
+import UserAuth from './UserAuth';
 import styles from './styles';
 
-import { Chessboard } from "react-chessboard";
+import PlayStrategy from './PlayStrategy'
+import PlayPuzzle from "./PlayPuzzle";
+import { useEffect } from "react";
 
 const strategies = [
     {
@@ -18,8 +21,17 @@ const App = () => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [strategyModalIsOpen, setStrategyModalIsOpen] = React.useState(false);
     const [playModalIsOpen, setPlayModalIsOpen] = React.useState(false);
+    const [loginModalIsOpen, setLoginModalIsOpen] = React.useState(false);
     const [strategy, setStrategy] = React.useState({});
     const [dragging, setDragging] = React.useState(false);
+    const [response, setResponse] = React.useState('');
+    const [rating, setRating] = React.useState(false);
+    const [puzzles, setPuzzles] = React.useState([]);
+    const [username, setUsername] = React.useState([]);
+    const [puzzle, setPuzzle] = React.useState([]);
+    // const [chess] = React.useState(new Chess());
+    // const [currentMove, setCurrentMove] = React.useState(0);
+    // const [boardLocked, setBoardLocked] = React.useState(false);
 
     const handleDragStart = () => {
         setDragging(true);
@@ -31,8 +43,11 @@ const App = () => {
     };
 
     const handleClick = () => {
-        if (!dragging) {
-          setModalIsOpen(true);
+        if (!dragging && "Logged in successfully" !== response ) {
+          setLoginModalIsOpen(true);
+        }
+        if ("Logged in successfully" === response ) {
+            setModalIsOpen(true);
         }
     };
 
@@ -44,7 +59,18 @@ const App = () => {
         setStrategyModalIsOpen(true);
     };
 
-    const handlePlayModal = (strategy) => {
+    const handlePlayModal = async (strategy) => {
+        const puzzleUrl = 'http://127.0.0.1:5000/get-puzzle'
+        const response = await fetch(puzzleUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ "group": 1 }),
+        });
+        const puzzlesR = await response.json();
+        console.log(puzzlesR)
+        setPuzzles(puzzlesR.puzzles)
         setPlayModalIsOpen(true);
     };
 
@@ -60,6 +86,55 @@ const App = () => {
         setPlayModalIsOpen(false);
     };
 
+    const closeLoginModal = () => {
+        setLoginModalIsOpen(false);
+    };
+
+    const handleUsername = (username) => {
+        console.log(`handle username: ${username}`)
+        setUsername(username)
+    }
+
+    const handleLoginSuccess = (response) => {
+        setResponse(response)
+        setTimeout(() => {
+            if ( "Logged in successfully" === response ) {
+                console.log('response')
+                if ( username ) {
+                    console.log('username', username)
+                    setLoginModalIsOpen(false);
+                    setModalIsOpen(true);
+
+                    const fetchPuzzles = async () => {
+                        const puzzleUrl = 'http://127.0.0.1:5000/get-puzzle'
+                        const response = await fetch(puzzleUrl, {
+                            method: 'POST',
+                            headers: {
+                            'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ "username": username, "group": 1 }),
+                        });
+                        const puzzlesR = await response.json();
+                        console.log(puzzlesR)
+                        setPuzzles(puzzlesR.puzzles)
+                    }
+                    // call the function
+                    fetchPuzzles()
+                }
+            }
+        }, 1000);
+    }
+
+    const handleRatingSuccess = (response) => {
+        console.log(`rating: ${response}`)
+        setRating(response)
+    }
+
+    const handlePuzzleModal = (puzzle) => {
+        setPuzzle(puzzle)
+        setPlayModalIsOpen(true);
+    };
+
     return (
       <div>
         <style>{styles}</style>
@@ -72,22 +147,53 @@ const App = () => {
                     Start Playing
                 </button>
             </Draggable>
+            {/* model after login */}
             <ChessMateModal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
-                title={`Playing Strategies`}
+                title={`Puzzles & Strategies`}
             >
-                <p>Below are the list of available strategies.</p>
-                <ol style={{cursor:'pointer'}}>
-                    {
-                        strategies.map((s) => <li key={s.name} onClick={() => handleStrategyModal(s)}>
-                                <h4>{s.name}</h4>
-                                <img src={`/${s.image}`} alt={s.name} style={{width:200}} />
-                            </li>
-                        )
-                    }
-                </ol>
+                Hello, {username}
+                {
+                    0 === rating ? 
+                        <>
+                            { puzzles && puzzles.length <= 0 && <p>Hang on.. Generating puzzles based on your user level...</p> }
+                            { puzzles && puzzles.length > 0 && <p>Below are the list of available puzzles.</p> }
+                            <ol style={{cursor:'pointer'}}>
+                                {
+                                    puzzles && puzzles.map((p,i) => {
+                                        console.log(p, i)
+                                        return <li key={i} onClick={() => handlePuzzleModal(p)}>
+                                            <h4>Puzzle {i}</h4>
+                                        </li>
+                                        }
+                                    )
+                                }
+                            </ol>
+                        </>
+                    :
+                        null
+                }
+                {
+                    0 < rating ?
+                        <>
+                            <p>User rating: {rating}</p>
+                            <p>Below are the list of available strategies.</p>
+                            <ol style={{cursor:'pointer'}}>
+                                {
+                                    strategies && strategies.map((s) => <li key={s.name} onClick={() => handleStrategyModal(s)}>
+                                            <h4>{s.name}</h4>
+                                            <img src={`/${s.image}`} alt={s.name} style={{width:200}} />
+                                        </li>
+                                    )
+                                }
+                            </ol>
+                        </>
+                    :
+                        null
+                }
             </ChessMateModal>
+            {/* strategy model */}
             <ChessMateModal
                 isOpen={strategyModalIsOpen}
                 onRequestClose={closeStrategyModal}
@@ -95,18 +201,28 @@ const App = () => {
                 css={{backgroundColor:'blue'}}
             >
                 <p>{strategy.description}</p>
+                <PlayStrategy />
                 <button className="strategy-button" onClick={handlePlayModal}>
-                    Play Strategy
+                    Play a puzzle
                 </button>
-                <Chessboard id={strategy.name} />
             </ChessMateModal>
+            {/* puzzle model */}
             <ChessMateModal
                 isOpen={playModalIsOpen}
                 onRequestClose={closePlayModal}
-                title={strategy.name}
+                title={'Play Puzzle'}
                 css={{backgroundColor:'green'}}
             >
-                <p>{strategy.description}</p>
+                <PlayPuzzle position={puzzle['fen']} bestMove={puzzle['best_move']} />
+            </ChessMateModal>
+            {/* login model */}
+            <ChessMateModal
+                isOpen={loginModalIsOpen}
+                onRequestClose={closeLoginModal}
+                title={"Login / Register"}
+                css={{backgroundColor:'orange'}}
+            >
+                <UserAuth response={response} setResponse={handleLoginSuccess} rating={rating} setRating={handleRatingSuccess} getUsername={handleUsername} />
             </ChessMateModal>
         </React.Fragment>
       </div>
