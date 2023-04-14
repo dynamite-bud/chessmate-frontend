@@ -23,9 +23,9 @@ const UserAuth = ({ response, setResponse, rating, setRating, getUsername }) => 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ username, password }),
-    });
+  });
 
-    const data = await response.json();
+  const data = await response.json();
     setResponse( data.message )
     setRating( data.rating )
     getUsername(username)
@@ -38,16 +38,18 @@ const UserAuth = ({ response, setResponse, rating, setRating, getUsername }) => 
 
   return (
     <div className="user-auth">
-      <h2>{isLogin ? 'Login' : 'Register'}</h2>
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Username" value={username} onChange={handleUsernameChange} />
         <input type="password" placeholder="Password" value={password} onChange={handlePasswordChange} />
         <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
       </form>
-      <button onClick={toggleAuthMode}>Switch to {isLogin ? 'Register' : 'Login'}</button>
-      <div>
-        {response}
+      <div className='flex text-center'>
+        Not signed up? <button className='btn-link' onClick={toggleAuthMode}>{isLogin ? 'Register' : 'Login'}</button>
       </div>
+      { response && <div className="alert alert-success">
+        {response}{ !isLogin ? '. Please login.' : null }
+      </div>
+      }
     </div>
   );
 };

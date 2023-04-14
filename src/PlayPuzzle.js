@@ -44,7 +44,10 @@ export default function PlayPuzzle({position, bestMove, setCompletedPuzzle}) {
       {
         celebrations ? <Confetti width={400} height={400} /> : null
       }
-      <Chessboard id="puzzle" position={game.fen()} onPieceDrop={makeAMove} arePremovesAllowed={true} arePiecesDraggable={draggable} />
+      {
+        celebrations ? <div className="best-move-pop">Best Move <img src="./like.png" alt="best" style={{width:20,marginBottom:'-20px'}} /></div> : null
+      }
+      <Chessboard id="puzzle" position={game.fen()} onPieceDrop={makeAMove} arePremovesAllowed={true} arePiecesDraggable={draggable}  customBoardStyle={{borderRadius: '4px', boxShadow: '4px 4px 0 rgb(0 0 0 / 20%)'}} customDarkSquareStyle={{ backgroundColor: '#004474' }} customLightSquareStyle={{ backgroundColor: '#f2ca5c' }} />
     </>
   );
 }
