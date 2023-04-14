@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && mv build/static/js/*.js build/static/js/content.js",
+    "build": "react-scripts build && mv build/static/js/*.js build/static/js/content.js && cp src/background/*.js build/static/js/ && cp src/content/*.js build/static/js/ ",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

@@ -3,7 +3,7 @@
   "name": "Chessmate",
   "version": "1.0.0",
   "description": "A proof of concept.",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "storage", "tabs", "cookies", "scripting"],
   "action": {
     "default_icon": {
       "16": "icon16.png",
@@ -14,10 +14,14 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["static/js/content.js"]
+      "matches": ["http://www.chess.com/*", "https://www.chess.com/*"],
+      "js": ["static/js/content.js", "static/js/chess_manipulation.js"]
     }
   ],
+  "background": {
+    "service_worker": "static/js/background.js",
+    "type": "module"
+  },
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
