@@ -3,7 +3,7 @@ import Modal from "react-modal";
 import { CSSTransition } from "react-transition-group";
 
 const ChessMateModal = ({ isOpen, onRequestClose, title, children, css = {
-    backgroundColor: '#000'
+    backgroundColor: '#fff'
 } }) => {
     return (
         <Modal

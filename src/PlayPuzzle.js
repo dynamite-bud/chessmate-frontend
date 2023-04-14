@@ -3,7 +3,7 @@ import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import Confetti from 'react-confetti'
 
-export default function PlayPuzzle({position, bestMove}) {
+export default function PlayPuzzle({position, bestMove, setCompletedPuzzle}) {
   const [game, setGame] = useState(new Chess(position));
   const [celebrations, setCelebrations] = useState(false);
   const [draggable, setDraggable] = useState(true);
@@ -20,6 +20,8 @@ export default function PlayPuzzle({position, bestMove}) {
 
     // illegal move
     if (move === null) return false;
+
+    setCompletedPuzzle(true)
 
     const playerMove = `${move.from}${move.to}`
 
@@ -42,7 +44,10 @@ export default function PlayPuzzle({position, bestMove}) {
       {
         celebrations ? <Confetti width={400} height={400} /> : null
       }
-      <Chessboard id="puzzle" position={game.fen()} onPieceDrop={makeAMove} arePremovesAllowed={true} arePiecesDraggable={draggable} />
+      {
+        celebrations ? <div className="best-move-pop">Best Move <img src="./like.png" alt="best" style={{width:20,marginBottom:'-20px'}} /></div> : null
+      }
+      <Chessboard id="puzzle" position={game.fen()} onPieceDrop={makeAMove} arePremovesAllowed={true} arePiecesDraggable={draggable}  customBoardStyle={{borderRadius: '4px', boxShadow: '4px 4px 0 rgb(0 0 0 / 20%)'}} customDarkSquareStyle={{ backgroundColor: '#004474' }} customLightSquareStyle={{ backgroundColor: '#f2ca5c' }} />
     </>
   );
 }
